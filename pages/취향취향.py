@@ -1,10 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-plt.rc('font', family='Malgun Gothic')
-plt.rcParams['axes.unicode_minus'] = False
 
 st.title("❤️ 국가별 장르 취향 및 변화 분석")
 
@@ -36,16 +31,10 @@ if not country_df.empty:
     # 3. 가장 인기 있는 장르의 연도별 변화 그래프
     st.subheader(f"📈 {selected_country} 내 [{favorite_genre}] 장르의 연도별 인기도 변화")
     
-    fav_genre_df = country_df[country_df['genre'] == favorite_genre].sort_values(by='year')
+    # 시각화용 데이터 인덱스 세팅
+    fav_genre_df = country_df[country_df['genre'] == favorite_genre].set_index('year')['popularity']
     
-    fig, ax = plt.subplots(figsize=(10, 5))
-    sns.lineplot(x='year', y='popularity', data=fav_genre_df, marker='s', color='darkorange', linewidth=2, ax=ax)
-    ax.set_title(f"{selected_country} - {favorite_genre} 장르 트렌드")
-    ax.set_xlabel("연도")
-    ax.set_ylabel("인기도")
-    ax.grid(True, linestyle='--', alpha=0.6)
-    ax.set_xticks(fav_genre_df['year'].unique())
-    
-    st.pyplot(fig)
+    # Streamlit 내장 선그래프로 교체하여 한글 깨짐 원천 방지
+    st.line_chart(fav_genre_df)
 else:
     st.warning("선택한 국가의 데이터가 없습니다.")
